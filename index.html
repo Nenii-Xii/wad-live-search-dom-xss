@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Search DOM Manipulation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 540px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 16px;
+      box-sizing: border-box;
+      margin-bottom: 16px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .category {
+      color: #555;
+      font-size: 0.9em;
+    }
+    .empty {
+      color: #777;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Item Search</h1>
+
+  <label for="search-input">Search by name or category:</label>
+  <input
+    id="search-input"
+    type="search"
+    placeholder="Type to filter items..."
+    autocomplete="off"
+  />
+
+  <ul id="results-list"></ul>
+
+  <script>
+    const items = [
+      { name: "Battery Swap Cabinet - Meruya", category: "Infrastructure" },
+      { name: "Battery Swap Cabinet - Tanjung Duren", category: "Infrastructure" },
+      { name: "Scheduled EV Maintenance", category: "Operations" },
+      { name: "Vehicle Registration & Ownership Renewal", category: "Administration" },
+      { name: "Fleet Insurance Coverage", category: "Compliance" },
+      { name: "Outlet Power Meter Inspection", category: "Technical" }
+    ];
+
+    const searchInput = document.getElementById("search-input");
+    const resultsList = document.getElementById("results-list");
+
+    function renderResults(filteredItems) {
+      // Clear previous DOM nodes without using innerHTML
+      resultsList.replaceChildren();
+
+      if (filteredItems.length === 0) {
+        const emptyItem = document.createElement("li");
+        emptyItem.className = "empty";
+        emptyItem.textContent = "No matching items found.";
+        resultsList.appendChild(emptyItem);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      filteredItems.forEach((item) => {
+        const listItem = document.createElement("li");
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = item.name;
+
+        const categorySpan = document.createElement("span");
+        categorySpan.className = "category";
+        categorySpan.textContent = item.category;
+
+        listItem.appendChild(nameSpan);
+        listItem.appendChild(categorySpan);
+        fragment.appendChild(listItem);
+      });
+
+      resultsList.appendChild(fragment);
+    }
+
+    searchInput.addEventListener("input", (event) => {
+      const query = event.target.value.trim().toLowerCase();
+
+      const filtered = items.filter((item) => {
+        const matchesName = item.name.toLowerCase().includes(query);
+        const matchesCategory = item.category.toLowerCase().includes(query);
+        return matchesName || matchesCategory;
+      });
+
+      renderResults(filtered);
+    });
+
+    // Initial render
+    renderResults(items);
+  </script>
+</body>
+</html>
